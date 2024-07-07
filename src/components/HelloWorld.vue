@@ -94,7 +94,6 @@ const cleanData = () => {
 
 <template>
   <LoadingSpinner v-if="loading" />
-  <pre>{{ loading }}</pre>
   <h1>{{ msg }}</h1>
 
   <div class="card">
