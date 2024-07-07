@@ -34,6 +34,45 @@ const connectSQL = () => {
     });
 };
 
+const downloadGCS = () => {
+  api.Gcs('sample.pdf').then((res) => {
+    startDownload(res, 'application/pdf');
+  });
+};
+
+const startDownload = (res, mimeType) => {
+  const url = window.URL.createObjectURL(
+    new Blob([res.data], { type: mimeType })
+  );
+  let filename = getBlobFilename(res);
+  const link = document.createElement('a');
+  link.setAttribute('download', filename);
+  link.href = url;
+  link.target = '_blank';
+  link.click();
+};
+
+const getBlobFilename = (res) => {
+  let filename = '';
+  const contentDisposition = res.headers.get('Content-Disposition');
+  if (contentDisposition) {
+    const filenameStarMatch = contentDisposition.match(
+      /filename\*=UTF-8''([^;]+)/
+    );
+    if (filenameStarMatch && filenameStarMatch.length === 2) {
+      filename = decodeURIComponent(filenameStarMatch[1]);
+    } else {
+      const filenameMatch = contentDisposition.match(
+        /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+      );
+      if (filenameMatch !== null && filenameMatch[1]) {
+        filename = filenameMatch[1].replace(/['"]/g, '');
+      }
+    }
+  }
+  return filename;
+};
+
 const cleanData = () => {
   data.value = [];
 };
@@ -46,6 +85,7 @@ const cleanData = () => {
     <button type="button" @click="increment">count is {{ count }}</button>
     <button type="button" @click="connectAPI">取回靜態API</button>
     <button type="button" @click="connectSQL">取回資料庫API</button>
+    <button type="button" @click="downloadGCS">下載GCS(sample.pdf)</button>
     <button type="button" @click="cleanData">清空取回內容</button>
   </div>
 
