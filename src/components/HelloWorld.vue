@@ -1,23 +1,46 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
+import { api } from '@api/demoAPI.ts';
 
 defineProps({
   msg: String,
-})
+});
 
-const count = ref(0)
+const count = ref(0);
+const data = ref([]);
+const increment = () => {
+  count.value++;
+};
+
+const connectAPI = () => {
+  api.Get().then((res) => {
+    [data.value] = [res.data];
+  });
+};
+
+const connectSQL = () => {
+  api.Sql().then((res) => {
+    [data.value] = [res.data];
+  });
+};
+
+const cleanData = () => {
+  data.value = [];
+};
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
 
   <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
+    <button type="button" @click="increment">count is {{ count }}</button>
+    <button type="button" @click="connectAPI">取回靜態API</button>
+    <button type="button" @click="connectSQL">取回資料庫API</button>
+    <button type="button" @click="cleanData">清空取回內容</button>
   </div>
+
+  <p>API取回內容:</p>
+  <pre>{{ data }}</pre>
 
   <p>
     Check out
@@ -39,5 +62,15 @@ const count = ref(0)
 <style scoped>
 .read-the-docs {
   color: #888;
+}
+pre {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 400px;
+  margin: auto;
+  text-align: left;
+}
+button + button {
+  margin-left: 1rem;
 }
 </style>
