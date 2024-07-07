@@ -13,15 +13,25 @@ const increment = () => {
 };
 
 const connectAPI = () => {
-  api.Get().then((res) => {
-    [data.value] = [res.data];
-  });
+  api
+    .Get()
+    .then((res) => {
+      [data.value] = [res.data];
+    })
+    .catch(() => {
+      data.value = res;
+    });
 };
 
 const connectSQL = () => {
-  api.Sql().then((res) => {
-    [data.value] = [res.data];
-  });
+  api
+    .Sql()
+    .then((res) => {
+      [data.value] = [res.data];
+    })
+    .catch(() => {
+      data.value = res;
+    });
 };
 
 const cleanData = () => {
