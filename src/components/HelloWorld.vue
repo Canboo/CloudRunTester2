@@ -1,6 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { api } from '@api/demoAPI.ts';
+import LoadingSpinner from './LoadingSpinner.vue';
+const loading = ref(false);
 
 defineProps({
   msg: String,
@@ -12,8 +14,9 @@ const increment = () => {
   count.value++;
 };
 
-const connectAPI = () => {
-  api
+const connectAPI = async () => {
+  loading.value = true;
+  await api
     .Get()
     .then((res) => {
       [data.value] = [res.data];
@@ -21,10 +24,14 @@ const connectAPI = () => {
     .catch(() => {
       data.value = res;
     });
+  setTimeout(() => {
+    loading.value = false;
+  }, 1000);
 };
 
-const connectSQL = () => {
-  api
+const connectSQL = async () => {
+  loading.value = true;
+  await api
     .Sql()
     .then((res) => {
       [data.value] = [res.data];
@@ -32,12 +39,19 @@ const connectSQL = () => {
     .catch(() => {
       data.value = res;
     });
+  setTimeout(() => {
+    loading.value = false;
+  }, 1000);
 };
 
-const downloadGCS = () => {
+const downloadGCS = async () => {
+  loading.value = true;
   api.Gcs('sample.pdf').then((res) => {
     startDownload(res, 'application/pdf');
   });
+  setTimeout(() => {
+    loading.value = false;
+  }, 1000);
 };
 
 const startDownload = (res, mimeType) => {
@@ -79,6 +93,8 @@ const cleanData = () => {
 </script>
 
 <template>
+  <LoadingSpinner v-if="loading" />
+  <pre>{{ loading }}</pre>
   <h1>{{ msg }}</h1>
 
   <div class="card">
