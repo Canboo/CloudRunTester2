@@ -21,10 +21,8 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          # project_id: 'nycu-osa-uat' #${{ secrets.GCP_PROJECT_ID }}
-          # credentials_json: ${{ secrets.GCP_SA_KEY }}
-          service_account: 'github-to-cloudrun@nycu-osa-uat.iam.gserviceaccount.com'
-          workload_identity_provider: 'projects/668790833830/locations/global/workloadIdentityPools/github-actions-pool/providers/nycu-uat-repo'
+          service_account: ${{ secrets.POC_CLOUDRUNWEB_OSA_UAT }}
+          workload_identity_provider: ${{ secrets.POC_CLOUDRUNWEB_PROJECTS668790833830 }}
           token_format: 'access_token'
 
       - name: Deploy to Cloud Run
