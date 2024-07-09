@@ -17,7 +17,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          service_account: ${{ secrets.POC_CLOUDRUNWEB_SEC_OSA_UAT }}
+          service_account: ${{ secrets.POC_CLOUDRUNWEB_OSA_UAT }}
           workload_identity_provider: ${{ secrets.POC_CLOUDRUNWEB_PROJECTS668790833830 }}
           token_format: 'access_token'
 
