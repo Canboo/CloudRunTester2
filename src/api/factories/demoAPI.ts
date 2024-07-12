@@ -7,4 +7,5 @@ export const api = {
     apiServer.get('GCS/' + data, {
       responseType: 'blob',
     }),
+  Depts: (query: Object) => apiServer.post('Depts', query),
 };

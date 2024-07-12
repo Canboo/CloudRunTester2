@@ -1,8 +1,44 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject, reactive } from 'vue';
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib from 'datatables.net-bs5';
+import DataTablesCore from 'datatables.net';
+DataTable.use(DataTablesLib);
+DataTable.use(DataTablesCore);
+
+const columns = [
+  { data: 'dep_academyno', title: '學院代碼' },
+  { data: 'dep_area', title: '校區' },
+  { data: 'dep_depename', title: '系所英文名稱' },
+  { data: 'dep_depesname', title: '系所英文簡稱' },
+  { data: 'dep_depname', title: '系所名稱' },
+  { data: 'dep_depno', title: '系所代碼' },
+  { data: 'dep_depsname', title: '系所簡稱' },
+  { data: 'dep_year', title: '適用學年度' },
+];
+const deptdata = ref([]);
+let deptQuery = reactive({
+  depYear: 113,
+});
+
 import { api } from '@api/demoAPI.ts';
 import LoadingSpinner from './LoadingSpinner.vue';
 const loading = ref(false);
+
+const getDepts = async () => {
+  loading.value = true;
+  await api
+    .Depts(deptQuery)
+    .then((res) => {
+      deptdata.value = res.data.data;
+    })
+    .catch((res) => {
+      alert(res);
+    });
+  setTimeout(() => {
+    loading.value = false;
+  }, 1000);
+};
 
 defineProps({
   msg: String,
@@ -90,6 +126,16 @@ const getBlobFilename = (res) => {
 const cleanData = () => {
   data.value = [];
 };
+
+const generateNumbers = (start, end) => {
+  let numbers = [];
+  for (let i = start; i <= end; i++) {
+    numbers.push(i);
+  }
+  return numbers;
+};
+
+const years = generateNumbers(97, 113);
 </script>
 
 <template>
@@ -97,11 +143,42 @@ const cleanData = () => {
   <h1>{{ msg }}</h1>
 
   <div class="card">
-    <button type="button" @click="increment">count is {{ count }}</button>
-    <button type="button" @click="connectAPI">取回靜態API</button>
-    <button type="button" @click="connectSQL">取回資料庫API</button>
-    <button type="button" @click="downloadGCS">下載GCS(sample.pdf)</button>
-    <button type="button" @click="cleanData">清空取回內容</button>
+    <div class="input-group mb-3">
+      <select
+        v-model="deptQuery.depYear"
+        class="form-select"
+        name="depYear"
+        id="depYear"
+      >
+        <option v-for="(year, index) in years" :key="index" :value="year">
+          {{ year }} 學年度
+        </option>
+      </select>
+      <button type="button" class="btn btn-outline-primary" @click="getDepts">
+        取回教學單位
+      </button>
+    </div>
+    <hr />
+    <DataTable :columns="columns" :data="deptdata" class="display"></DataTable>
+  </div>
+
+  <hr />
+  <div class="btn-group">
+    <button class="btn btn-secondary" type="button" @click="increment">
+      count is {{ count }}
+    </button>
+    <button class="btn btn-secondary" type="button" @click="connectAPI">
+      取回靜態API
+    </button>
+    <button class="btn btn-secondary" type="button" @click="connectSQL">
+      取回資料庫API
+    </button>
+    <button class="btn btn-secondary" type="button" @click="downloadGCS">
+      下載GCS(sample.pdf)
+    </button>
+    <button class="btn btn-secondary" type="button" @click="cleanData">
+      清空取回內容
+    </button>
   </div>
 
   <p>API取回內容:</p>
@@ -131,9 +208,11 @@ const cleanData = () => {
 pre {
   border: 1px solid #ccc;
   padding: 1rem;
-  width: 400px;
+  max-width: 400px;
   margin: auto;
   text-align: left;
+  height: 200px;
+  overflow: auto;
 }
 button + button {
   margin-left: 1rem;
