@@ -30,6 +30,10 @@ const getDepts = async () => {
   await api
     .Depts(deptQuery)
     .then((res) => {
+      if (res.data.error.length !== 0) {
+        alert(res.data.error);
+        return;
+      }
       deptdata.value = res.data.data;
     })
     .catch((res) => {
